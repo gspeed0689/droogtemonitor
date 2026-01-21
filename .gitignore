@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+*.png
+borders.*
+download_script.py
+*.grib
+*.idx
+ERA5* 
+.ipynb_checkpoints/*
