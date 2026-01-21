@@ -3,8 +3,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+import requests
 # import scipy.fft as fft
 from datetime import datetime, timedelta
+import zipfile
+import pathlib
+from io import BytesIO
 
 # st.code(np.std([2, 4, 4, 4, 5,5,7,9]))
 
@@ -12,14 +16,41 @@ st.set_page_config(layout="wide", page_icon="🌦️")
 
 st.title("Interactief Droogte Monitor")
 
+data_folder = pathlib.Path("./data")
+yearly_data_pathobj = data_folder / "int_nl.dat"
 yearly_data_path = "./data/int_nl.dat"
-# data_2025_path = "interactief-droogtemonitor/data/rdev_tijdreeks.txt"
 
+# data 2026
+now = datetime.now()
+season_start = datetime(now.year, 4, 1)
+season_end = datetime(now.year, 9, 31)
+in_season = season_start < now <= season_end # intentionally written so season is true from 2 April, data for 1 April not available on 1 April. 
+if in_season:
+    extract_name = now.strftime("%Y%m%d_rdev_tijdreeks.txt")
+    extract_path = data_folder / extract_name
+    if not extract_path.exists():
+        r = requests.get("https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/rdev_tijdreeks.zip")
+        zip_obj = BytesIO("w")
+        zip_obj.write(r.content)
+        z = zipfile.ZipFile(zip_obj)
+        if "rdev_tijdreeks.txt" in z.filelist:
+            z.extract("rdev_tijdreeks.txt", extract_path)
+        
 yearly_df = pd.read_csv(yearly_data_path, 
                         skiprows=11, 
                         sep="\t", 
                         names=["date", "mm_deficit"],
                         usecols=[0,1])
+
+if "extract_path" in dir():
+    if in_season: 
+        current_year_df = pd.read_csv(extract_path,
+                                      skiprows=1, 
+                                      sep="\t", 
+                                      names=["date", "mm_deficit"],
+                                      usecols=[0,1])
+    yearly_df = pd.concat([yearly_df, current_year_df])
+
 # d2025_df = pd.read_csv(data_2025_path)
 
 yearly_df["datetime"] = [datetime.strptime(str(x), "%Y%m%d").date() for x in yearly_df["date"]]
