@@ -1,7 +1,7 @@
 [project]
-name = "droogtemonitor"
+name = "interactief-droogtemonitor"
 version = "0.1.0"
-description = "Add your description here"
+description = "Streamlit application to interactively explore drought data from the KNMI"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
