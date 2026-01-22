@@ -12,7 +12,9 @@ from io import BytesIO
 
 # st.code(np.std([2, 4, 4, 4, 5,5,7,9]))
 
-st.set_page_config(layout="wide", page_icon="🌦️")
+st.set_page_config(layout="wide", 
+                   page_icon="🌦️", 
+                   page_title="Droogtemonitor")
 
 st.title("Interactief Droogte Monitor")
 
@@ -23,7 +25,7 @@ yearly_data_path = "./data/int_nl.dat"
 # data 2026
 now = datetime.now()
 season_start = datetime(now.year, 4, 1)
-season_end = datetime(now.year, 9, 31)
+season_end = datetime(now.year, 9, 30)
 in_season = season_start < now <= season_end # intentionally written so season is true from 2 April, data for 1 April not available on 1 April. 
 if in_season:
     extract_name = now.strftime("%Y%m%d_rdev_tijdreeks.txt")
